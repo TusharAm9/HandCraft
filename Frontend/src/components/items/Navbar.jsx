@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart, Menu, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/badge";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserCartThunk, logoutUserThunk } from "../../store/thunk/userThunk";
 import { useState } from "react";
