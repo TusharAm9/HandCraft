@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/items/ProductCard";
-import { Input } from "@/components/ui/Input";
+import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductsThunk } from "../store/thunk/productThunk";
