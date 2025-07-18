@@ -44,7 +44,7 @@ export const productSlice = createSlice({
       state.product = action.payload;
     });
     builder.addCase(getProductThunk.rejected, (state, action) => {
-      state.screenLoading = true;
+      state.screenLoading = false;
     });
 
     //add to cart
