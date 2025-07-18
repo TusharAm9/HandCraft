@@ -40,7 +40,6 @@ export const register = asyncHandler(async (req, res, next) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      domain: "https://artician-craft.onrender.com",
     })
     .json({
       success: true,
@@ -79,7 +78,6 @@ export const login = asyncHandler(async (req, res, next) => {
       httpOnly: true,
       secure: true,
       sameSite: "None",
-      domain: "https://artician-craft.onrender.com",
     })
     .json({
       success: true,
