@@ -68,7 +68,7 @@ export const getUserThunk = createAsyncThunk(
     try {
       const response = await axiosInstance.get("/user/get-user-profile");
       toast.success("Welcome back");
-      return response.data.responseData;
+      return response.data;
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "An error occurred";

@@ -86,7 +86,7 @@ export const login = asyncHandler(async (req, res, next) => {
 });
 
 export const getUserProfile = asyncHandler(async (req, res, next) => {
-  const userId = req.user._id;
+  const userId = req.user.id;
   const user = await User.findById(userId);
 
   res.json({

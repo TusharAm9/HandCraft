@@ -105,7 +105,7 @@ export const userSlice = createSlice({
     });
     builder.addCase(getUserThunk.fulfilled, (state, action) => {
       state.screenLoading = false;
-      state.userProfile = action.payload;
+      state.userProfile = action.payload.responseData?.user;
       state.isAuthenticated = true;
     });
     builder.addCase(getUserThunk.rejected, (state) => {

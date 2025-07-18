@@ -60,7 +60,7 @@ export default function AuthPage() {
       if (registerResponse.payload?.success) {
         navigate("/");
       }
-      return; // prevent login call
+      return;
     }
 
     // Only send email and password
