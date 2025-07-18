@@ -39,7 +39,8 @@ export const register = asyncHandler(async (req, res, next) => {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "None",
+      domain: "https://artician-craft.onrender.com",
     })
     .json({
       success: true,
@@ -77,7 +78,8 @@ export const login = asyncHandler(async (req, res, next) => {
       expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
       httpOnly: true,
       secure: true,
-      sameSite: "none",
+      sameSite: "None",
+      domain: "https://artician-craft.onrender.com",
     })
     .json({
       success: true,

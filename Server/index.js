@@ -10,12 +10,8 @@ app.use(
   cors({
     origin: ["https://artician-craft.onrender.com", "http://localhost:5173"],
     credentials: true,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 1000 * 60 * 60 * 24 * 7,
-    },
+    allowedHeaders: ["Content-Type", "Authorization", "Cookie"],
+    exposedHeaders: ["Set-Cookie"],
   })
 );
 app.use(express.json());
