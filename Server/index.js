@@ -8,8 +8,17 @@ import cors from "cors";
 const app = express();
 app.use(
   cors({
-    origin: ["https://artician-craft.onrender.com"],
+    origin: [
+      "https://dropshippingtb-frontend.onrender.com",
+      "http://localhost:5173",
+    ],
     credentials: true,
+    cookie: {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
   })
 );
 app.use(express.json());
