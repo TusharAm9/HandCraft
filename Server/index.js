@@ -8,8 +8,7 @@ import cors from "cors";
 const app = express();
 app.use(
   cors({
-    origin: "https://artician-craft.onrender.com",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    origin: ["https://artician-craft.onrender.com"],
     credentials: true,
   })
 );

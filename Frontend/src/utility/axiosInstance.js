@@ -8,12 +8,9 @@ export const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  // ✅ Automatically handle JSON or FormData
   if (config.data instanceof FormData) {
-    // Let the browser set the correct multipart/form-data boundary
     delete config.headers["Content-Type"];
   } else {
-    // For JSON, set explicitly
     config.headers["Content-Type"] = "application/json";
   }
 
