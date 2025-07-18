@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://handcraft-1-rgnj.onrender.com/api";
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export const axiosInstance = axios.create({
   baseURL: BASE_URL,
