@@ -6,7 +6,7 @@ import {
   getProductThunk,
 } from "../thunk/productThunk";
 const initialState = {
-  screenLoading: false,
+  screenLoading: true,
   products: [],
   cart: [],
   buttonLoading: false,
@@ -44,7 +44,7 @@ export const productSlice = createSlice({
       state.product = action.payload;
     });
     builder.addCase(getProductThunk.rejected, (state, action) => {
-      state.screenLoading = false;
+      state.screenLoading = true;
     });
 
     //add to cart

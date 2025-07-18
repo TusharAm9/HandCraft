@@ -21,7 +21,6 @@ const categories = ["Furniture", "Kitchenware", "Decor", "Storage"];
 
 const AddProduct = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
