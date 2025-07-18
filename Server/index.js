@@ -6,7 +6,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+app.use(
+  cors({
+    origin: "https://artician-craft.onrender.com",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 const PORT = process.env.PORT || 5000;
