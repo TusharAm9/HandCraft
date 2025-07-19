@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getProductsThunk } from "../store/thunk/productThunk";
+import { MoveRight } from "lucide-react";
 
 export default function WoodenCraftsHomePage() {
   const dispatch = useDispatch();
@@ -19,12 +20,19 @@ export default function WoodenCraftsHomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">
-      <section className="relative bg-gradient-to-r from-amber-100 to-orange-100 py-20">
+      <section
+        className="relative bg-cover bg-center bg-no-repeat py-20"
+        style={{ backgroundImage: `url("/bgFinal.png")` }}
+      >
+        <div
+          className="absolute inset-0 bg-amber-100"
+          style={{ opacity: 0.2 }}
+        ></div>
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-5xl font-bold text-amber-900 mb-6">
+          <h2 className="text-5xl font-bold text-amber-50 mb-6">
             Handcrafted Wooden Treasures
           </h2>
-          <p className="text-xl text-amber-800 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-amber-100 mb-8 max-w-2xl mx-auto">
             Discover unique, handmade wooden products crafted by skilled
             artisans. Each piece tells a story of tradition, quality, and
             natural beauty.
@@ -33,18 +41,11 @@ export default function WoodenCraftsHomePage() {
             <Link to="/all-products">
               <Button
                 size="lg"
-                className="bg-amber-700 hover:bg-amber-800 px-8"
+                className="bg-orange-500 hover:bg-orange-700 px-8"
               >
                 Shop Now
               </Button>
             </Link>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-amber-700 text-amber-700 hover:bg-amber-50 px-8 bg-transparent"
-            >
-              Learn Our Story
-            </Button>
           </div>
         </div>
       </section>
