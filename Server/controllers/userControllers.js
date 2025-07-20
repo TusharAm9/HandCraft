@@ -98,7 +98,12 @@ export const getUserProfile = asyncHandler(async (req, res, next) => {
 export const logout = asyncHandler(async (req, res, next) => {
   res
     .status(200)
-    .cookie("token", "", { expires: new Date(Date.now()) })
+    .cookie("token", "", {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    })
     .json({
       success: true,
       responseData: { message: "Logged out successfully" },

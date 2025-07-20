@@ -15,6 +15,7 @@ import ViewAllProducts from "./pages/ViewAllProducts";
 import OrderSuccess from "./pages/OrderSuccess";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
+import About from "./pages/About";
 
 function App() {
   const dispatch = useDispatch();
@@ -45,6 +46,7 @@ function App() {
             <Route path="/my-orders" element={<OrderHistoryPage />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/add-new-product" element={<AddProduct />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </PageLayout>
       </Router>

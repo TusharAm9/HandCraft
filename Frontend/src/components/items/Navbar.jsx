@@ -65,7 +65,7 @@ export default function Navbar() {
               <Link to="#" className="text-gray-700 hover:text-amber-700">
                 Decor
               </Link>
-              <Link to="#" className="text-gray-700 hover:text-amber-700">
+              <Link to="/about" className="text-gray-700 hover:text-amber-700">
                 About
               </Link>
             </nav>
