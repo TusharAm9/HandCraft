@@ -49,7 +49,6 @@ export default function AuthPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submitting userData", userData);
 
     if (!isLogin) {
       if (userData.password !== userData.confirmPassword) {

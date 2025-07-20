@@ -13,9 +13,9 @@ export const loginUserThunk = createAsyncThunk(
       toast.success("Login successful!");
       return response.data;
     } catch (error) {
-      console.log(error);
       const errorMessage =
         error?.response?.data?.message || "An error occurred";
+      toast.error(errorMessage);
       return rejectWithValue(errorMessage);
     }
   }
@@ -56,7 +56,6 @@ export const logoutUserThunk = createAsyncThunk(
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
       return rejectWithValue(errorMessage);
     }
   }
@@ -72,7 +71,6 @@ export const getUserThunk = createAsyncThunk(
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "An error occurred";
-      toast.error(errorMessage);
       return rejectWithValue(errorMessage);
     }
   }
@@ -216,6 +214,23 @@ export const getUserOrdersThunk = createAsyncThunk(
     try {
       const response = await axiosInstance.get("/user/orders");
       return response.data?.responseData;
+    } catch (error) {
+      const errorMessage =
+        error?.response?.data?.message || "An error occurred";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const updateCartQuantityThunk = createAsyncThunk(
+  "user/updateQuantity",
+  async ({ productId, quantity }, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.put("/user-order/updateQuantity", {
+        productId,
+        quantity,
+      });
+      return response.data;
     } catch (error) {
       const errorMessage =
         error?.response?.data?.message || "An error occurred";

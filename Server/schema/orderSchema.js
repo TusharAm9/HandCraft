@@ -59,6 +59,7 @@ const ordersSchema = new mongoose.Schema({
   },
   customerAddress: {
     // Better structure instead of generic Object
+    name: { type: String, required: true },
     street: { type: String, required: true },
     city: { type: String, required: true },
     state: { type: String, required: true },

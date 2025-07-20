@@ -18,7 +18,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white">
+                <a href="/all-products" className="hover:text-white">
                   Products
                 </a>
               </li>
@@ -63,23 +63,19 @@ export default function Footer() {
             <h5 className="font-semibold mb-4">Connect</h5>
             <ul className="space-y-2 text-amber-200">
               <li>
-                <a href="#" className="hover:text-white">
+                <a
+                  href="https://www.instagram.com/artisancraft_official?utm_source=qr&igsh=OWN2cW12YmozMTQ="
+                  className="hover:text-white"
+                >
                   Instagram
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-white">
+                <a
+                  href="https://www.facebook.com/share/1EgcCZNbWh/?mibextid=qi2Omg"
+                  className="hover:text-white"
+                >
                   Facebook
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  Pinterest
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-white">
-                  YouTube
                 </a>
               </li>
             </ul>

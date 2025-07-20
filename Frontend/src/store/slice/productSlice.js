@@ -52,7 +52,6 @@ export const productSlice = createSlice({
       state.screenLoading = true;
     });
     builder.addCase(addToCartThunk.fulfilled, (state, action) => {
-      console.log("Response:", action.payload);
       state.screenLoading = false;
       state.cart = action.payload;
     });
@@ -68,7 +67,6 @@ export const productSlice = createSlice({
       .addCase(addNewProductThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.products = [...state.products, action.payload];
-        console.log(action.payload);
       })
       .addCase(addNewProductThunk.rejected, (state, action) => {
         state.loading = false;

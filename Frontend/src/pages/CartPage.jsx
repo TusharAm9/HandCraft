@@ -7,6 +7,7 @@ import {
   removeItemThunk,
   verifyRazorpayPaymentThunk,
   createRazorpayOrderThunk,
+  updateCartQuantityThunk,
 } from "../store/thunk/userThunk";
 import {
   ShoppingCart,
@@ -15,6 +16,8 @@ import {
   Edit,
   ArrowLeft,
   Lock,
+  Minus,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,7 +56,7 @@ const CartPage = () => {
     if (quantity === 0) {
       dispatch(removeItemThunk({ productId }));
     } else {
-      dispatch(updateCartQuantity({ id, quantity }));
+      dispatch(updateCartQuantityThunk({ productId, quantity }));
     }
   };
 
@@ -99,7 +102,6 @@ const CartPage = () => {
         createRazorpayOrderThunk({ amount: total })
       ).unwrap();
       if (result) {
-        console.log(result);
         openRazorpayCheckout(result, orderData);
       }
     } catch (err) {
@@ -130,7 +132,6 @@ const CartPage = () => {
         dispatch(verifyRazorpayPaymentThunk(paymentData))
           .unwrap()
           .then((res) => {
-            console.log("✅ Payment Verified:", res);
             navigate("/success");
           })
           .catch((err) => {
@@ -155,7 +156,10 @@ const CartPage = () => {
     <div className="min-h-screen bg-amber-50 p-4">
       <div className="container mx-auto px-4 pb-16">
         <div className="flex items-center gap-2 text-sm text-gray-600 mb-4">
-          <a href="/" className="hover:text-amber-700 flex items-center gap-2">
+          <a
+            href="/all-products"
+            className="hover:text-amber-700 flex items-center gap-2"
+          >
             <ArrowLeft className="h-4 w-4" /> Continue Shopping
           </a>
           <span>/</span>
@@ -249,7 +253,7 @@ const CartPage = () => {
                           const res = await dispatch(
                             addUserAddressThunk(newAddress)
                           ).unwrap();
-                          setSelectedAddress(res); // res is now the added address
+                          setSelectedAddress(res);
                           setShowAddressForm(false);
                         } catch (error) {
                           console.error("Address Add Error:", error);
@@ -321,9 +325,35 @@ const CartPage = () => {
                                   </div>
                                   <div className="flex items-center gap-2 ml-4">
                                     <div className="flex items-center border border-amber-200 rounded-md">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() =>
+                                          updateQuantity(
+                                            item._id,
+                                            item.quantity - 1
+                                          )
+                                        }
+                                        className="h-8 w-8"
+                                      >
+                                        <Minus className="h-3 w-3" />
+                                      </Button>
                                       <span className="px-3 py-1 text-sm font-medium">
                                         {item.quantity}
                                       </span>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        onClick={() =>
+                                          updateQuantity(
+                                            item._id,
+                                            item.quantity + 1
+                                          )
+                                        }
+                                        className="h-8 w-8"
+                                      >
+                                        <Plus className="h-3 w-3" />
+                                      </Button>
                                     </div>
                                     <Button
                                       variant="ghost"

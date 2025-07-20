@@ -10,6 +10,7 @@ import {
   logoutUserThunk,
   registerUserThunk,
   removeItemThunk,
+  updateCartQuantityThunk,
   verifyRazorpayPaymentThunk,
 } from "../thunk/userThunk";
 
@@ -162,7 +163,6 @@ export const userSlice = createSlice({
       state.paymentVerification.loading = false;
       state.paymentVerification.success = true;
       state.cartItems = action.payload?.cart || [];
-      console.log(action.payload);
     });
     builder.addCase(verifyRazorpayPaymentThunk.rejected, (state, action) => {
       state.paymentVerification.loading = false;
@@ -182,6 +182,29 @@ export const userSlice = createSlice({
     builder.addCase(getUserOrdersThunk.rejected, (state, action) => {
       state.screenLoading = false;
     });
+
+    // update cart quantity
+    builder
+      .addCase(updateCartQuantityThunk.pending, (state) => {
+        state.screenLoading = true;
+        state.error = null;
+      })
+      .addCase(updateCartQuantityThunk.fulfilled, (state, action) => {
+        state.screenLoading = false;
+        const { productId, quantity } = action.meta.arg;
+
+        const index = state.cartItems.findIndex(
+          (item) => item._id === productId
+        );
+        if (index !== -1) {
+          state.cartItems[index].quantity = quantity;
+        }
+      })
+      .addCase(updateCartQuantityThunk.rejected, (state, action) => {
+        state.screenLoading = false;
+        console.log(action.payload);
+        state.error = action.payload || "Failed to update cart quantity";
+      });
   },
 });
 

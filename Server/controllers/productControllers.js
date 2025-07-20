@@ -124,10 +124,8 @@ export const addToCart = asyncHandler(async (req, res, next) => {
   );
 
   if (existingItemIndex !== -1) {
-    // Update quantity if exists
     user.cartItems[existingItemIndex].quantity += quantity;
   } else {
-    // Else, push new item
     user.cartItems.push({ productId, quantity });
   }
 
