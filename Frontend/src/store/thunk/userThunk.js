@@ -177,14 +177,10 @@ export const verifyRazorpayPaymentThunk = createAsyncThunk(
       if (!orderData) {
         return rejectWithValue("Order data is required");
       }
-
       const { itemList, totalAmount, customerAddress } = orderData;
-      console.log(customerAddress);
-
       if (!itemList || !totalAmount || !customerAddress) {
         return rejectWithValue("Missing required order fields");
       }
-
       if (!itemList.length) {
         return rejectWithValue("Order must contain at least one item");
       }

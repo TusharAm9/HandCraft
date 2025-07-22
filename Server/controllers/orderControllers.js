@@ -161,7 +161,6 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
     return next(new errorHandler("Invalid status value", 400));
   }
   const order = await Orders.findById(orderId).populate("userId");
-
   if (!order) {
     return next(new errorHandler("Order not found", 404));
   }
