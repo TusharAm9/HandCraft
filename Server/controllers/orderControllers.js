@@ -83,17 +83,22 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
     const newOrder = new Orders({
       orderId,
       userId,
-      itemList,
+      itemList: itemList.map((item) => ({
+        ...item,
+        productId: item.productId,
+        quantity: item.quantity || 1,
+        price: item.price || 0,
+      })),
       totalAmount,
       orderStatus: "pending",
       paymentStatus: "paid",
       customerAddress: {
-        name,
-        street,
-        city,
-        state,
-        zipCode,
-        phone,
+        name: String(name).trim(),
+        street: String(street).trim(),
+        city: String(city).trim(),
+        state: String(state).trim(),
+        zipCode: String(zipCode).trim(),
+        phone: String(phone).trim(),
       },
       razorpayOrderId: razorpay_order_id,
       razorpayPaymentId: razorpay_payment_id,
@@ -106,25 +111,21 @@ export const verifyRazorpayPayment = asyncHandler(async (req, res, next) => {
     const removeUserCart = await User.findById(userId);
     removeUserCart.cartItems = [];
     removeUserCart.orderHistory = savedOrder;
-    await removeUserCart.save();
+    const Update = await removeUserCart.save();
 
     const data = populatedOrder;
-    await sendSuccessMail(
-      populatedOrder.userId?.email,
-      "Order Successfull",
-      data
-    );
 
     res.status(200).json({
       success: true,
       message: "Payment verified and order created successfully",
       paymentVerified: true,
       order: populatedOrder,
-      cart: removeUserCart.cartItems,
+      cart: Update.cartItems,
     });
+
+    await sendSuccessMail(data.userId?.email, "Order Successfull", data);
   } catch (error) {
     console.error("Order creation error after payment verification:", error);
-    //uuid error
     if (error.code === 11000) {
       return next(new errorHandler("Order ID conflict, please try again", 500));
     }

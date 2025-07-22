@@ -161,7 +161,11 @@ export default function ProductDetails() {
           </div>
 
           <div className="mt-4 flex space-x-4">
-            <Button size="lg" className="flex-1" onClick={buyNow}>
+            <Button
+              size="lg"
+              className="flex-1"
+              onClick={() => buyNow(product._id)}
+            >
               Buy Now
             </Button>
             <Button

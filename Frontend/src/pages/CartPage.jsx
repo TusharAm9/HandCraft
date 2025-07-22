@@ -116,8 +116,7 @@ const CartPage = () => {
       currency: "INR",
       name: "Artician Crafts",
       description: "Payment",
-      order_id: order.orderId, // Razorpay order_id
-
+      order_id: order.orderId,
       handler: function (response) {
         const { razorpay_payment_id, razorpay_order_id, razorpay_signature } =
           response;
@@ -135,6 +134,7 @@ const CartPage = () => {
             navigate("/success");
           })
           .catch((err) => {
+            console.log(err);
             console.error("❌ Payment Verification Failed:", err);
           });
       },
