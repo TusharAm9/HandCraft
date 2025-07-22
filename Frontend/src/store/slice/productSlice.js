@@ -16,12 +16,7 @@ const initialState = {
 export const productSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {
-    // setNewMessage: (state, action) => {
-    //   const oldMessages = [...state.messages] ? [...state.messages] : [];
-    //   state.messages = [...oldMessages, action.payload];
-    // },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     // get-product action
     builder.addCase(getProductsThunk.pending, (state, action) => {

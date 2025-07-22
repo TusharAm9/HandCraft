@@ -38,7 +38,7 @@ export default function ProductDetails() {
   };
 
   const buyNow = (productId) => {
-    addToCart(productId);
+    dispatch(addToCartThunk({ productId, quantity }));
     navigate("/cart");
   };
 
@@ -47,6 +47,8 @@ export default function ProductDetails() {
       dispatch(getProductThunk(productId));
     }
   }, [productId, dispatch]);
+
+  //logic of selected image
 
   if (screenLoading) {
     return (
@@ -199,6 +201,124 @@ export default function ProductDetails() {
           </div>
         </div>
       </div>
+
+      {/* Product Details Tabs */}
+      {/* <Tabs defaultValue="details" className="mb-16">
+                <TabsList className="grid w-full grid-cols-3 bg-amber-50">
+                  <TabsTrigger value="details" className="data-[state=active]:bg-amber-700 data-[state=active]:text-white">
+                    Details
+                  </TabsTrigger>
+                  <TabsTrigger value="reviews" className="data-[state=active]:bg-amber-700 data-[state=active]:text-white">
+                    Reviews ({product.reviews})
+                  </TabsTrigger>
+                </TabsList>
+      
+                <TabsContent value="details" className="mt-6">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-amber-900">Product Specifications</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {Object.entries(product.specifications).map(([key, value]) => (
+                          <div key={key} className="flex justify-between py-2 border-b border-gray-100">
+                            <span className="font-medium text-gray-700">{key}:</span>
+                            <span className="text-gray-900">{value}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+      
+                <TabsContent value="reviews" className="mt-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-amber-900">Customer Reviews</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div className="text-center">
+                          <div className="text-4xl font-bold text-amber-700">{product.rating}</div>
+                          <div className="flex justify-center mb-2">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-5 w-5 ${
+                                  i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <p className="text-gray-600">Based on {product.reviews} reviews</p>
+                        </div>
+      
+                        <div className="space-y-2">
+                          {ratingDistribution.map((rating) => (
+                            <div key={rating.stars} className="flex items-center gap-2 text-sm">
+                              <span className="w-8">{rating.stars}★</span>
+                              <Progress value={rating.percentage} className="flex-1 h-2" />
+                              <span className="w-8 text-gray-600">{rating.count}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <div className="lg:col-span-2 space-y-6">
+                      {productReviews.map((review) => (
+                        <Card key={review.id}>
+                          <CardContent className="pt-6">
+                            <div className="flex items-start gap-4">
+                              <Avatar>
+                                <AvatarImage src={review.avatar || "/placeholder.svg"} />
+                                <AvatarFallback>
+                                  {review.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")}
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <h4 className="font-semibold">{review.name}</h4>
+                                  {review.verified && (
+                                    <Badge variant="outline" className="text-xs">
+                                      Verified Purchase
+                                    </Badge>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-2 mb-2">
+                                  <div className="flex">
+                                    {[...Array(5)].map((_, i) => (
+                                      <Star
+                                        key={i}
+                                        className={`h-4 w-4 ${
+                                          i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                  <span className="text-sm text-gray-600">{review.date}</span>
+                                </div>
+                                <p className="text-gray-700">{review.comment}</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+      
+                      <Button
+                        variant="outline"
+                        className="w-full border-amber-700 text-amber-700 hover:bg-amber-50 bg-transparent"
+                      >
+                        Load More Reviews
+                      </Button>
+                    </div>
+                  </div>
+                </TabsContent>
+              </Tabs> */}
 
       <section className="mt-16">
         <h3 className="text-2xl font-bold text-amber-900 mb-8">

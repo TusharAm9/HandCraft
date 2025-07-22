@@ -7,7 +7,11 @@ import User from "../schema/userSchema.js";
 import Products from "../schema/productSchema.js";
 import { asyncHandler } from "../utility/asyncHandler.js";
 import { errorHandler } from "../utility/errorHandler.js";
-import { sendMail, sendSuccessMail } from "../middlewares/sendMail.js";
+import {
+  sendInvoiceMail,
+  sendMail,
+  sendSuccessMail,
+} from "../middlewares/sendMail.js";
 const generateOrderId = () => {
   return `ORD-${Date.now()}-${uuidv4().substring(0, 8).toUpperCase()}`;
 };
@@ -166,6 +170,14 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
 
   const data = order;
   await sendMail(order.userId?.email, "Order Update", data);
+
+  if (data.orderStatus === "delivered") {
+    await sendInvoiceMail(
+      order.userId?.email,
+      "Invoice - Artician Craft",
+      data
+    );
+  }
 
   res.status(200).json({
     success: true,

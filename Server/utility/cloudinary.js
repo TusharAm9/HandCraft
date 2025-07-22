@@ -26,12 +26,11 @@ const storage = new CloudinaryStorage({
     allowed_formats: ["jpg", "jpeg", "png"],
     transformation: [
       {
-        quality: "auto:best", // Best quality with auto optimization
-        fetch_format: "auto", // Auto format selection (WebP for supported browsers)
-        flags: "progressive", // Progressive JPEG loading
+        quality: "auto:best",
+        fetch_format: "auto",
+        flags: "progressive",
       },
     ],
-    // Optional: Add timestamp to filename for uniqueness
     public_id: (req, file) => {
       const timestamp = Date.now();
       const originalName = file.originalname.split(".")[0];

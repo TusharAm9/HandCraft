@@ -161,4 +161,123 @@ const sendSuccessMail = async (email, subject, data) => {
   });
 };
 
-export { sendMail, sendSuccessMail };
+const sendInvoiceMail = async (email, subject, data) => {
+  const transport = createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.GMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+
+  const {
+    _id: orderId,
+    createdAt,
+    paymentStatus,
+    orderStatus,
+    cartItems,
+    shippingAddress,
+    totalAmount,
+  } = data;
+
+  const customerAddress = shippingAddress;
+  const orderDate = new Date(createdAt).toLocaleDateString("en-IN");
+
+  const itemRows = cartItems
+    .map(
+      (item, index) => `
+        <tr>
+          <td style="border: 1px solid #ccc; padding: 8px;">${index + 1}</td>
+          <td style="border: 1px solid #ccc; padding: 8px;">${item.name}</td>
+          <td style="border: 1px solid #ccc; padding: 8px;">₹${item.price}</td>
+          <td style="border: 1px solid #ccc; padding: 8px;">${
+            item.quantity
+          }</td>
+          <td style="border: 1px solid #ccc; padding: 8px;">₹${(
+            item.price * item.quantity
+          ).toFixed(2)}</td>
+        </tr>`
+    )
+    .join("");
+
+  const html = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="UTF-8" />
+      <title>Invoice - ${orderId}</title>
+    </head>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+      <div style="max-width: 800px; margin: auto; padding: 20px; border: 1px solid #ddd;">
+        <h2 style="text-align: center; color: #000;">🧾 Tax Invoice</h2>
+        <hr />
+
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+          <div>
+            <h3>Sold By:</h3>
+            <p>
+              <strong>Artisan Craft</strong><br />
+              Alipurduar, West Bengal - 736121<br />
+              Phone: +91-XXXXXXXXXX<br />
+            </p>
+          </div>
+          <div>
+            <h3>Billed To:</h3>
+            <p>
+              <strong>${customerAddress.name}</strong><br />
+              ${customerAddress.street}, ${customerAddress.city},<br />
+              ${customerAddress.state} - ${customerAddress.zipCode}<br />
+              Phone: ${customerAddress.phone}
+            </p>
+          </div>
+        </div>
+
+        <table style="width: 100%; margin-bottom: 20px;">
+          <tr>
+            <td><strong>Invoice No:</strong> ${orderId}</td>
+            <td><strong>Date:</strong> ${orderDate}</td>
+          </tr>
+          <tr>
+            <td><strong>Payment Status:</strong> ${paymentStatus}</td>
+            <td><strong>Order Status:</strong> ${orderStatus}</td>
+          </tr>
+        </table>
+
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead style="background-color: #f5f5f5;">
+            <tr>
+              <th style="border: 1px solid #ccc; padding: 8px;">S.No</th>
+              <th style="border: 1px solid #ccc; padding: 8px;">Product Name</th>
+              <th style="border: 1px solid #ccc; padding: 8px;">Unit Price</th>
+              <th style="border: 1px solid #ccc; padding: 8px;">Quantity</th>
+              <th style="border: 1px solid #ccc; padding: 8px;">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${itemRows}
+          </tbody>
+        </table>
+
+        <div style="text-align: right; margin-top: 20px;">
+          <h3>Total Amount Paid: ₹${totalAmount.toFixed(2)}</h3>
+        </div>
+
+        <p style="margin-top: 40px; font-size: 0.9em; color: #666;">
+          This is a computer-generated invoice and does not require a physical signature.
+        </p>
+      </div>
+    </body>
+  </html>
+`;
+
+  await transport.sendMail({
+    from: process.env.GMAIL,
+    to: email,
+    subject,
+    html,
+  });
+};
+
+export { sendMail, sendSuccessMail, sendInvoiceMail };
