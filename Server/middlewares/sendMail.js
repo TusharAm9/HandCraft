@@ -165,7 +165,6 @@ const sendInvoiceMail = async (email, subject, data) => {
   const transport = createTransport({
     host: "smtp.gmail.com",
     port: 465,
-    secure: true,
     auth: {
       user: process.env.GMAIL,
       pass: process.env.PASSWORD,
@@ -177,26 +176,28 @@ const sendInvoiceMail = async (email, subject, data) => {
     createdAt,
     paymentStatus,
     orderStatus,
-    cartItems,
     shippingAddress,
     totalAmount,
+    itemList,
   } = data;
 
   const customerAddress = shippingAddress;
   const orderDate = new Date(createdAt).toLocaleDateString("en-IN");
 
-  const itemRows = cartItems
-    .map(
+  const itemRows = itemList
+    ?.map(
       (item, index) => `
         <tr>
           <td style="border: 1px solid #ccc; padding: 8px;">${index + 1}</td>
-          <td style="border: 1px solid #ccc; padding: 8px;">${item.name}</td>
-          <td style="border: 1px solid #ccc; padding: 8px;">₹${item.price}</td>
           <td style="border: 1px solid #ccc; padding: 8px;">${
-            item.quantity
+            item?.productName
+          }</td>
+          <td style="border: 1px solid #ccc; padding: 8px;">₹${item?.price}</td>
+          <td style="border: 1px solid #ccc; padding: 8px;">${
+            item?.quantity
           }</td>
           <td style="border: 1px solid #ccc; padding: 8px;">₹${(
-            item.price * item.quantity
+            item?.price * item?.quantity
           ).toFixed(2)}</td>
         </tr>`
     )
@@ -226,10 +227,10 @@ const sendInvoiceMail = async (email, subject, data) => {
           <div>
             <h3>Billed To:</h3>
             <p>
-              <strong>${customerAddress.name}</strong><br />
-              ${customerAddress.street}, ${customerAddress.city},<br />
-              ${customerAddress.state} - ${customerAddress.zipCode}<br />
-              Phone: ${customerAddress.phone}
+              <strong>${customerAddress?.name}</strong><br />
+              ${customerAddress?.street}, ${customerAddress?.city},<br />
+              ${customerAddress?.state} - ${customerAddress?.zipCode}<br />
+              Phone: ${customerAddress?.phone}
             </p>
           </div>
         </div>
@@ -271,7 +272,6 @@ const sendInvoiceMail = async (email, subject, data) => {
     </body>
   </html>
 `;
-
   await transport.sendMail({
     from: process.env.GMAIL,
     to: email,

@@ -171,7 +171,7 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
   const data = order;
   await sendMail(order.userId?.email, "Order Update", data);
 
-  if (data.orderStatus === "delivered") {
+  if (order.orderStatus === "delivered") {
     await sendInvoiceMail(
       order.userId?.email,
       "Invoice - Artician Craft",
