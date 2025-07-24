@@ -28,7 +28,7 @@ const ProductCard = ({ product }) => {
       <div className="relative overflow-hidden">
         <Link to={`/${product._id}`}>
           <img
-            src={product.images[0].url}
+            src={product.images[0]?.url}
             alt={product.name}
             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300 cursor-pointer"
           />
@@ -46,11 +46,11 @@ const ProductCard = ({ product }) => {
           variant="ghost"
           size="icon"
           className="absolute top-3 right-3 bg-white/80 hover:bg-white"
-          onClick={() => toggleWishlist(product.id)}
+          onClick={() => toggleWishlist(product._id)}
         >
           <Heart
             className={`h-4 w-4 ${
-              wishlistItems.includes(product.id)
+              wishlistItems.includes(product._id)
                 ? "fill-red-500 text-red-500"
                 : "text-gray-600"
             }`}

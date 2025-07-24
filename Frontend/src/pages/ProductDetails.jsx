@@ -37,9 +37,13 @@ export default function ProductDetails() {
     dispatch(addToCartThunk({ productId, quantity }));
   };
 
-  const buyNow = (productId) => {
-    dispatch(addToCartThunk({ productId, quantity }));
-    navigate("/cart");
+  const buyNow = async (productId) => {
+    try {
+      await dispatch(addToCartThunk({ productId, quantity })).unwrap();
+      navigate("/cart");
+    } catch (error) {
+      console.error("buy now faield", error);
+    }
   };
 
   useEffect(() => {
@@ -91,7 +95,7 @@ export default function ProductDetails() {
             alt={product?.name}
             className="w-full h-full object-cover object-top"
           />
-          {/* <div className="flex mt-2 space-x-2">
+          <div className="flex mt-2 space-x-2">
             {product?.images.map((img, i) => (
               <button
                 key={i}
@@ -107,7 +111,7 @@ export default function ProductDetails() {
                 />
               </button>
             ))}
-          </div> */}
+          </div>
         </div>
 
         {/* Product Info */}
