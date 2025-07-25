@@ -7,6 +7,8 @@ import {
   getProducts,
   updateProduct,
 } from "../controllers/productControllers.js";
+
+import { addReviewToProduct } from "../controllers/reviewControllers.js";
 import { adminMiddleware } from "../middlewares/adminMiddleware.js";
 import upload from "../utility/cloudinary.js";
 
@@ -28,5 +30,6 @@ router.put(
   updateProduct
 );
 router.post("/cart/add", authMiddleware, addToCart);
+router.post("/review/:productId", authMiddleware, addReviewToProduct);
 
 export default router;

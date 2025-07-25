@@ -13,11 +13,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useDispatch, useSelector } from "react-redux";
-import { addToCartThunk, getProductThunk } from "../store/thunk/productThunk";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  addToCartThunk,
+  getProductsThunk,
+  getProductThunk,
+} from "../store/thunk/productThunk";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Star as StarIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ProductDetails() {
   const { productId } = useParams();
@@ -26,11 +32,11 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
-  const { product, screenLoading, products } = useSelector(
+  const { product, screenLoading, products, reviews } = useSelector(
     (state) => state.productSlice
   );
   const relatedProducts = products
-    ?.filter((p) => p._id !== product?._id)
+    ?.filter((p) => p._id !== product?._id && p.category === product?.category)
     .slice(0, 4);
 
   const addToCart = (productId) => {
@@ -47,12 +53,18 @@ export default function ProductDetails() {
   };
 
   useEffect(() => {
-    if (productId) {
-      dispatch(getProductThunk(productId));
-    }
+    const fetchData = async () => {
+      if (productId) {
+        try {
+          await dispatch(getProductThunk(productId)).unwrap();
+          await dispatch(getProductsThunk()).unwrap();
+        } catch (error) {
+          console.error("Data fetch failed:", error);
+        }
+      }
+    };
+    fetchData();
   }, [productId, dispatch]);
-
-  //logic of selected image
 
   if (screenLoading) {
     return (
@@ -89,39 +101,19 @@ export default function ProductDetails() {
     <div className="min-h-screen bg-amber-50 p-4">
       <div className="max-w-4xl mx-auto grid lg:grid-cols-2 gap-8">
         {/* Images */}
-        <div className="h-[85%] overflow-hidden rounded shadow mx-auto w-[80%] md:w-[90%] lg:w-[80%]">
-          <img
-            src={product?.images[0]?.url}
-            alt={product?.name}
-            className="w-full h-full object-cover object-top"
-          />
-          <div className="flex mt-2 space-x-2">
-            {product?.images.map((img, i) => (
-              <button
-                key={i}
-                onClick={() => setSelectedImage(i)}
-                className={`w-20 h-20 rounded overflow-hidden border ${
-                  i === selectedImage ? "border-amber-600" : "border-gray-200"
-                }`}
-              >
-                <img
-                  src={img.url}
-                  alt={`thumb-${i}`}
-                  className="object-cover w-full h-full"
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Product Info */}
-        <div>
-          <div className="flex justify-between">
-            <Badge variant="outline">{product?.category}</Badge>
+        <div className="space-y-4">
+          {/* Main Image */}
+          <div className="relative aspect-2/3 overflow-hidden rounded shadow mx-auto w-[65%] md:w-[75%]">
+            <img
+              src={product?.images[selectedImage]?.url}
+              alt={product?.name}
+              className="w-full h-full object-cover object-top"
+            />
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setIsWishlisted((w) => !w)}
+              className="absolute top-2 right-2 z-10 bg-white/70 hover:bg-white/90 rounded-full"
             >
               <Heart
                 className={
@@ -131,17 +123,40 @@ export default function ProductDetails() {
             </Button>
           </div>
 
-          <h1 className="text-3xl font-bold text-amber-900 mb-2">
+          {/* Thumbnail Images */}
+          <div className="flex justify-center space-x-2 overflow-x-auto pb-2">
+            {product?.images?.map((img, i) => (
+              <button
+                key={i}
+                onClick={() => setSelectedImage(i)}
+                className={`flex-shrink-0 w-10 h-10 md:w-10 md:h-14 rounded overflow-hidden border-2 transition-all duration-200 ${
+                  i === selectedImage
+                    ? "border-amber-600 ring-2 ring-amber-200"
+                    : "border-gray-200 hover:border-amber-400"
+                }`}
+              >
+                <img
+                  src={img.url}
+                  alt={`Product image ${i + 1}`}
+                  className="object-cover w-full h-full"
+                />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Product Info */}
+        <div>
+          <Badge variant="outline">{product?.category}</Badge>
+          <h1 className="text-xl md:text-2xl font-semibold md:font-bold text-amber-900 mb-2 ">
             {product?.name}
           </h1>
-
+          <p className="mt-2 text-sm text-gray-700">{product?.description}</p>
           <div className="mt-4 flex items-baseline space-x-4">
-            <span className="text-4xl font-bold text-amber-700">
+            <span className="text-2xl md:text-3xl font-bold text-amber-700">
               ₹{product?.price}
             </span>
           </div>
-
-          <p className="mt-4 text-gray-700">{product?.description}</p>
 
           {/* Quantity & Actions */}
           <div className="mt-6 flex items-center space-x-4">
@@ -210,123 +225,95 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* Product Details Tabs */}
-      {/* <Tabs defaultValue="details" className="mb-16">
-                <TabsList className="grid w-full grid-cols-3 bg-amber-50">
-                  <TabsTrigger value="details" className="data-[state=active]:bg-amber-700 data-[state=active]:text-white">
-                    Details
-                  </TabsTrigger>
-                  <TabsTrigger value="reviews" className="data-[state=active]:bg-amber-700 data-[state=active]:text-white">
-                    Reviews ({product.reviews})
-                  </TabsTrigger>
-                </TabsList>
-      
-                <TabsContent value="details" className="mt-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="text-amber-900">Product Specifications</CardTitle>
-                    </CardHeader>
+      <Tabs defaultValue="reviews" className="mb-16">
+        <TabsList className="grid w-full grid-cols-1 bg-amber-50">
+          <TabsTrigger
+            value="reviews"
+            className="data-[state=active]:bg-amber-700 data-[state=active]:text-white"
+          >
+            Reviews
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="reviews" className="mt-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-amber-900">
+                  Customer Reviews
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-amber-700">
+                    {product?.rating}
+                  </div>
+                  <div className="flex justify-center mb-2">
+                    {[...Array(5)].map((_, i) => (
+                      <StarIcon
+                        key={i}
+                        className={`h-5 w-5 ${
+                          i < Math.floor(product?.rating)
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-gray-600">
+                    Based on {product?.numOfReviews} reviews
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+            <div className="lg:col-span-2 space-y-6">
+              {reviews?.map((review, index) => {
+                return (
+                  <Card key={review._id}>
                     <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {Object.entries(product.specifications).map(([key, value]) => (
-                          <div key={key} className="flex justify-between py-2 border-b border-gray-100">
-                            <span className="font-medium text-gray-700">{key}:</span>
-                            <span className="text-gray-900">{value}</span>
+                      <div className="flex items-start gap-4">
+                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                          {review.user?.fullName?.[0] || "U"}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-bold">
+                              {review.user?.fullName || "Anonymous User"}
+                            </h4>
+                            <Badge variant="outline" className="text-xs">
+                              Verified Purchase
+                            </Badge>
                           </div>
-                        ))}
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="flex ">
+                              {[...Array(5)].map((_, i) => (
+                                <StarIcon
+                                  key={i}
+                                  className={`h-4 w-4 ${
+                                    i < Math.floor(review.rating)
+                                      ? "fill-yellow-400 text-yellow-400"
+                                      : "text-gray-300"
+                                  }`}
+                                />
+                              ))}
+                            </span>
+                            <span className="text-sm text-gray-600">
+                              {new Date(review.createdAt)
+                                .toLocaleDateString("en-US")
+                                .replaceAll("/", "-")}
+                            </span>
+                          </div>
+                          <p className="text-gray-700">{review.comment}</p>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
-                </TabsContent>
-      
-                <TabsContent value="reviews" className="mt-6">
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                  
-                    <Card>
-                      <CardHeader>
-                        <CardTitle className="text-amber-900">Customer Reviews</CardTitle>
-                      </CardHeader>
-                      <CardContent className="space-y-4">
-                        <div className="text-center">
-                          <div className="text-4xl font-bold text-amber-700">{product.rating}</div>
-                          <div className="flex justify-center mb-2">
-                            {[...Array(5)].map((_, i) => (
-                              <Star
-                                key={i}
-                                className={`h-5 w-5 ${
-                                  i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                                }`}
-                              />
-                            ))}
-                          </div>
-                          <p className="text-gray-600">Based on {product.reviews} reviews</p>
-                        </div>
-      
-                        <div className="space-y-2">
-                          {ratingDistribution.map((rating) => (
-                            <div key={rating.stars} className="flex items-center gap-2 text-sm">
-                              <span className="w-8">{rating.stars}★</span>
-                              <Progress value={rating.percentage} className="flex-1 h-2" />
-                              <span className="w-8 text-gray-600">{rating.count}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    <div className="lg:col-span-2 space-y-6">
-                      {productReviews.map((review) => (
-                        <Card key={review.id}>
-                          <CardContent className="pt-6">
-                            <div className="flex items-start gap-4">
-                              <Avatar>
-                                <AvatarImage src={review.avatar || "/placeholder.svg"} />
-                                <AvatarFallback>
-                                  {review.name
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .join("")}
-                                </AvatarFallback>
-                              </Avatar>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <h4 className="font-semibold">{review.name}</h4>
-                                  {review.verified && (
-                                    <Badge variant="outline" className="text-xs">
-                                      Verified Purchase
-                                    </Badge>
-                                  )}
-                                </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                  <div className="flex">
-                                    {[...Array(5)].map((_, i) => (
-                                      <Star
-                                        key={i}
-                                        className={`h-4 w-4 ${
-                                          i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-300"
-                                        }`}
-                                      />
-                                    ))}
-                                  </div>
-                                  <span className="text-sm text-gray-600">{review.date}</span>
-                                </div>
-                                <p className="text-gray-700">{review.comment}</p>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-      
-                      <Button
-                        variant="outline"
-                        className="w-full border-amber-700 text-amber-700 hover:bg-amber-50 bg-transparent"
-                      >
-                        Load More Reviews
-                      </Button>
-                    </div>
-                  </div>
-                </TabsContent>
-              </Tabs> */}
+                );
+              })}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
 
       <section className="mt-16">
         <h3 className="text-2xl font-bold text-amber-900 mb-8">
@@ -361,7 +348,7 @@ export default function ProductDetails() {
                   <div className="flex items-center">
                     <StarIcon className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     <span className="text-sm text-gray-600 ml-1">
-                      {relatedProduct?.rating || "4.3"}
+                      {relatedProduct?.rating || "4.2"}
                     </span>
                   </div>
                 </div>

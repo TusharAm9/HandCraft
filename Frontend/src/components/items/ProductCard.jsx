@@ -80,7 +80,7 @@ const ProductCard = ({ product }) => {
             ))}
           </div>
           <span className="text-sm text-gray-600 ml-2">
-            {product.rating} ({product.reviews})
+            {product.rating} ({product.numOfReviews})
           </span>
         </div>
         <div className="flex items-center justify-between mb-4">

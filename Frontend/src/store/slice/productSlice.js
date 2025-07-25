@@ -11,6 +11,7 @@ const initialState = {
   cart: [],
   buttonLoading: false,
   product: null,
+  reviews: null,
 };
 
 export const productSlice = createSlice({
@@ -18,7 +19,7 @@ export const productSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    // get-product action
+    // get-products action
     builder.addCase(getProductsThunk.pending, (state, action) => {
       state.screenLoading = true;
     });
@@ -37,6 +38,7 @@ export const productSlice = createSlice({
     builder.addCase(getProductThunk.fulfilled, (state, action) => {
       state.screenLoading = false;
       state.product = action.payload;
+      state.reviews = action.payload.reviews || [];
     });
     builder.addCase(getProductThunk.rejected, (state, action) => {
       state.screenLoading = false;

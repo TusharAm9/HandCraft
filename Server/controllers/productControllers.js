@@ -1,4 +1,5 @@
 import Product from "../schema/productSchema.js";
+
 import { asyncHandler } from "../utility/asyncHandler.js";
 import { errorHandler } from "../utility/errorHandler.js";
 import User from "../schema/userSchema.js";
@@ -65,7 +66,13 @@ export const getProductDetails = asyncHandler(async (req, res, next) => {
   if (!productId) {
     return next(new errorHandler("Invalid request", 400));
   }
-  const product = await Product.findById(productId);
+  const product = await Product.findById(productId).populate({
+    path: "reviews",
+    populate: {
+      path: "user",
+      select: "fullName avatar",
+    },
+  });
   if (!product) {
     return next(new errorHandler("Product not found!", 400));
   }
