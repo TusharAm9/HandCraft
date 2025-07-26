@@ -23,7 +23,6 @@ import { Star as StarIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function ProductDetails() {
   const { productId } = useParams();
@@ -113,7 +112,7 @@ export default function ProductDetails() {
               variant="ghost"
               size="icon"
               onClick={() => setIsWishlisted((w) => !w)}
-              className="absolute top-2 right-2 z-10 bg-white/70 hover:bg-white/90 rounded-full"
+              className="absolute top-2 right-2 z-10 bg-white/75 hover:bg-white/90 rounded-full"
             >
               <Heart
                 className={
@@ -151,61 +150,103 @@ export default function ProductDetails() {
           <h1 className="text-xl md:text-2xl font-semibold md:font-bold text-amber-900 mb-2 ">
             {product?.name}
           </h1>
+          <div className="flex items-center gap-4 mb-2">
+            <div className="flex items-center">
+              {[...Array(5)].map((_, i) => (
+                <StarIcon
+                  key={i}
+                  className={`h-4 w-4 ${
+                    i < Math.floor(product.rating)
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-gray-300"
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-amber-700 font-medium">{product.rating}</span>
+            <span className="text-gray-600">
+              ({product.numOfReviews} reviews)
+            </span>
+          </div>
           <p className="mt-2 text-sm text-gray-700">{product?.description}</p>
-          <div className="mt-4 flex items-baseline space-x-4">
+          <div className="mt-3 flex items-baseline space-x-4">
             <span className="text-2xl md:text-3xl font-bold text-amber-700">
               ₹{product?.price}
             </span>
+            {product.originalPrice && (
+              <span className="text-sm md:text-xl text-gray-500 line-through">
+                ₹{product.originalPrice}
+              </span>
+            )}
+            {product.originalPrice && (
+              <Badge className="bg-green-100 text-green-800 text-sm hover:bg-green-100">
+                Save ₹{product.originalPrice - product.price}
+              </Badge>
+            )}
           </div>
 
-          {/* Quantity & Actions */}
-          <div className="mt-6 flex items-center space-x-4">
+          {/* Stock Status */}
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="text-green-700 font-medium">In Stock</span>
+          </div>
+
+          <div className="flex items-center gap-4 mt-2">
+            <span className="font-medium text-amber-900">Quantity:</span>
+            <div className="flex items-center border border-amber-200 rounded-lg">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                className="h-9 w-10"
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              <span className="px-1 py-1 font-medium">{quantity}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() =>
+                  setQuantity((q) => Math.min(product?.stock, q + 1))
+                }
+                className="h-9 w-10"
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-4 space-y-4">
+            {/* Buy Now & Add to Cart */}
+            <div className="flex gap-4">
+              <Button
+                size="lg"
+                className="flex-1 bg-amber-700 hover:bg-amber-800"
+                onClick={() => buyNow(product._id)}
+              >
+                Buy Now
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                className="flex-1 border-amber-700 text-amber-700 hover:bg-amber-50 bg-transparent"
+                onClick={() => addToCart(product._id)}
+              >
+                <ShoppingCart className="h-5 w-5 mr-2" />
+                Add to Cart
+              </Button>
+            </div>
+
+            {/* Share Button */}
             <Button
               variant="ghost"
-              size="icon"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              className="w-full text-amber-700 hover:bg-amber-50"
+              onClick={() => alert("Share link copied!")}
             >
-              <Minus />
-            </Button>
-            <span className="font-medium">{quantity}</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() =>
-                setQuantity((q) => Math.min(product?.stock, q + 1))
-              }
-            >
-              <Plus />
+              <Share2 className="h-4 w-4 mr-2" />
+              Share this product
             </Button>
           </div>
-
-          <div className="mt-4 flex space-x-4">
-            <Button
-              size="lg"
-              className="flex-1"
-              onClick={() => buyNow(product._id)}
-            >
-              Buy Now
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex-1"
-              onClick={() => addToCart(product._id)}
-            >
-              <ShoppingCart className="mr-2" />
-              Add to Cart
-            </Button>
-          </div>
-
-          <Button
-            variant="ghost"
-            className="mt-4 w-full"
-            onClick={() => alert("Share link copied!")}
-          >
-            <Share2 className="mr-2" />
-            Share this product
-          </Button>
 
           {/* Trust Icons */}
           <div className="mt-6 grid grid-cols-3 text-center gap-4">
@@ -225,11 +266,37 @@ export default function ProductDetails() {
         </div>
       </div>
 
+      {/* Full Description */}
+      <Card className="mt-6 border-0 shadow-lg mb-4 pt-0">
+        <CardHeader className="bg-gradient-to-r from-amber-100 to-orange-100/10 ">
+          <CardTitle className="text-amber-900 flex items-center gap-2 p-2">
+            <div className="w-2 h-2 bg-amber-600 rounded-full"></div>
+            Detailed Description
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="px-6">
+          <div className="prose prose-amber max-w-none">
+            <p className="text-gray-700 leading-relaxed text-lg">
+              {product.description}
+            </p>
+            <div className="mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 rounded-lg border-l-4 border-amber-500">
+              <h4 className="font-semibold text-amber-900 mb-2">
+                Artisan Craftsmanship
+              </h4>
+              <p className="text-amber-800 text-sm">
+                Each piece is meticulously handcrafted by skilled artisans using
+                traditional techniques passed down through generations.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <Tabs defaultValue="reviews" className="mb-16">
         <TabsList className="grid w-full grid-cols-1 bg-amber-50">
           <TabsTrigger
             value="reviews"
-            className="data-[state=active]:bg-amber-700 data-[state=active]:text-white"
+            className="data-[state=active]:bg-amber-900 data-[state=active]:text-white"
           >
             Reviews
           </TabsTrigger>
@@ -271,7 +338,7 @@ export default function ProductDetails() {
                 return (
                   <Card key={review._id}>
                     <CardContent>
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-3">
                         <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
                           {review.user?.fullName?.[0] || "U"}
                         </div>
@@ -280,8 +347,8 @@ export default function ProductDetails() {
                             <h4 className="font-bold">
                               {review.user?.fullName || "Anonymous User"}
                             </h4>
-                            <Badge variant="outline" className="text-xs">
-                              Verified Purchase
+                            <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                              ✓ Verified
                             </Badge>
                           </div>
                           <div className="flex items-center gap-2 mb-2">
