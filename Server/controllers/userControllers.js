@@ -55,7 +55,7 @@ export const login = asyncHandler(async (req, res, next) => {
   }
   const user = await User.findOne({
     $or: [{ phoneNumber }, { email }],
-  });
+  }).select("fullName email phoneNumber avatar role");
 
   if (!user) {
     return next(new errorHandler("Enter valid phoneNumber or password", 400));
@@ -87,7 +87,9 @@ export const login = asyncHandler(async (req, res, next) => {
 
 export const getUserProfile = asyncHandler(async (req, res, next) => {
   const userId = req.user.id;
-  const user = await User.findById(userId);
+  const user = await User.findById(userId).select(
+    "fullName email phoneNumber avatar role"
+  );
 
   res.json({
     success: true,
