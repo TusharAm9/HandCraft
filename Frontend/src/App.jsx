@@ -16,6 +16,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import OrderHistoryPage from "./pages/OrderHistoryPage";
 import AdminDashboard from "./pages/Admin/AdminDashboard";
 import About from "./pages/About";
+import { ReactLenis } from "./utility/lenis";
 
 function App() {
   const dispatch = useDispatch();
@@ -24,33 +25,35 @@ function App() {
   }, []);
 
   return (
-    <div className="flex min-h-svh flex-col ">
-      <Toaster position="top-center" reverseOrder={true} />
-      <Router>
-        <ScrollToTop />
-        <PageLayout>
-          <Routes>
-            <Route
-              path="/auth"
-              element={
-                <AuthRedirectRoute>
-                  <AuthPage />
-                </AuthRedirectRoute>
-              }
-            />
-            <Route path="/" element={<WoodenCraftsHomePage />} />
-            <Route path="/:productId" element={<ProductDetails />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/all-products" element={<ViewAllProducts />} />
-            <Route path="/success" element={<OrderSuccess />} />
-            <Route path="/my-orders" element={<OrderHistoryPage />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/add-new-product" element={<AddProduct />} />
-            <Route path="/about" element={<About />} />
-          </Routes>
-        </PageLayout>
-      </Router>
-    </div>
+    <ReactLenis root>
+      <div className="flex min-h-svh flex-col ">
+        <Toaster position="top-center" reverseOrder={true} />
+        <Router>
+          <ScrollToTop />
+          <PageLayout>
+            <Routes>
+              <Route
+                path="/auth"
+                element={
+                  <AuthRedirectRoute>
+                    <AuthPage />
+                  </AuthRedirectRoute>
+                }
+              />
+              <Route path="/" element={<WoodenCraftsHomePage />} />
+              <Route path="/:productId" element={<ProductDetails />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/all-products" element={<ViewAllProducts />} />
+              <Route path="/success" element={<OrderSuccess />} />
+              <Route path="/my-orders" element={<OrderHistoryPage />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/add-new-product" element={<AddProduct />} />
+              <Route path="/about" element={<About />} />
+            </Routes>
+          </PageLayout>
+        </Router>
+      </div>
+    </ReactLenis>
   );
 }
 
