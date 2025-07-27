@@ -234,3 +234,64 @@ export const updateCartQuantityThunk = createAsyncThunk(
     }
   }
 );
+
+export const getBulkProductsThunk = createAsyncThunk(
+  "/product/getBulk",
+  async (_, { rejectWithValue }) => {
+    try {
+      const guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      const productIds = guestCart.map((item) => item.productId);
+      if (!productIds.length) {
+        return rejectWithValue("No product IDs found in localStorage cart.");
+      }
+      const response = await axiosInstance.post("/product/bulk", {
+        ids: productIds,
+      });
+
+      const products = response.data.responseData;
+
+      // Merge quantities
+      const fullCart = guestCart.map((cartItem) => {
+        const product = products.find((p) => p._id === cartItem.productId);
+        if (!product) return null;
+
+        return {
+          product,
+          quantity: cartItem.quantity,
+          _id: cartItem.productId,
+        };
+      });
+      return fullCart;
+    } catch (error) {
+      console.error("Bulk fetch error:", error);
+      const errorMessage =
+        error?.response?.data?.message || "Failed to fetch product data.";
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const mergeGuestCartThunk = createAsyncThunk(
+  "cart/mergeGuestCart",
+  async (_, { rejectWithValue }) => {
+    try {
+      const guestCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+      const guestCartItems = guestCart.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity || 1,
+      }));
+      if (guestCartItems.length === 0) {
+        return rejectWithValue("No guest cart items to merge");
+      }
+      const response = await axiosInstance.post("/product/marge-cart", {
+        guestCartItems,
+      });
+      localStorage.removeItem("guest_cart");
+      return response.data.responseData;
+    } catch (err) {
+      const errorMsg =
+        err.response?.data?.message || "Failed to merge guest cart";
+      return rejectWithValue(errorMsg);
+    }
+  }
+);

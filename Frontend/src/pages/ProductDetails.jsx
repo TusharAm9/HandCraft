@@ -23,6 +23,7 @@ import { Star as StarIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import toast from "react-hot-toast";
 
 export default function ProductDetails() {
   const { productId } = useParams();
@@ -34,12 +35,33 @@ export default function ProductDetails() {
   const { product, screenLoading, products, reviews } = useSelector(
     (state) => state.productSlice
   );
+  const { isAuthenticated } = useSelector((state) => state.userSlice);
   const relatedProducts = products
     ?.filter((p) => p._id !== product?._id && p.category === product?.category)
     .slice(0, 4);
 
+  const addToCartAsGuest = (productId, quantity = 1) => {
+    const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+    const existingItemIndex = localCart.findIndex(
+      (item) => item.productId === product._id
+    );
+
+    if (existingItemIndex !== -1) {
+      localCart[existingItemIndex].quantity += quantity;
+    } else {
+      localCart.push({ productId: product._id, quantity });
+    }
+
+    localStorage.setItem("guest_cart", JSON.stringify(localCart));
+  };
+
   const addToCart = (productId) => {
-    dispatch(addToCartThunk({ productId, quantity }));
+    if (isAuthenticated) {
+      dispatch(addToCartThunk({ productId, quantity }));
+    } else {
+      addToCartAsGuest(productId, quantity);
+      toast.success("Product Added to cart");
+    }
   };
 
   const buyNow = async (productId) => {

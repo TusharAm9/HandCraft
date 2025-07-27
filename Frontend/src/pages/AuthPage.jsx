@@ -13,7 +13,11 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUserThunk, registerUserThunk } from "../store/thunk/userThunk";
+import {
+  loginUserThunk,
+  mergeGuestCartThunk,
+  registerUserThunk,
+} from "../store/thunk/userThunk";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
@@ -57,20 +61,27 @@ export default function AuthPage() {
       }
       const registerResponse = await dispatch(registerUserThunk(userData));
       if (registerResponse.payload?.success) {
+        try {
+          await dispatch(mergeGuestCartThunk()).unwrap();
+        } catch (err) {
+          console.error("Guest cart merge failed after login:", err);
+        }
         navigate("/");
       }
       return;
     }
-
-    // Only send email and password
     const loginResponse = await dispatch(
       loginUserThunk({
         email: userData.email,
         password: userData.password,
       })
     );
-
     if (loginResponse.payload?.success) {
+      try {
+        await dispatch(mergeGuestCartThunk()).unwrap();
+      } catch (err) {
+        console.error("Guest cart merge failed after login:", err);
+      }
       navigate("/");
     }
   };

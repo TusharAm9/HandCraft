@@ -1,5 +1,4 @@
 import Product from "../schema/productSchema.js";
-
 import { asyncHandler } from "../utility/asyncHandler.js";
 import { errorHandler } from "../utility/errorHandler.js";
 import User from "../schema/userSchema.js";
@@ -104,22 +103,14 @@ export const getProducts = asyncHandler(async (req, res, next) => {
 
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { quantity = 1, productId } = req.body;
-
-  // Validation
   if (!productId || quantity <= 0) {
-    return res.status(400).json({
-      success: false,
-      message: "Product ID and valid quantity are required",
-    });
+    return next(
+      new errorHandler("Product ID and valid quantity are required", 400)
+    );
   }
-
-  // Fetch Product
   const product = await Product.findById(productId);
   if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: "Product not found",
-    });
+    return next(new errorHandler("Product not found", 404));
   }
 
   // Find the authenticated user (attached from auth middleware)
@@ -141,6 +132,61 @@ export const addToCart = asyncHandler(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: "Product added to cart",
+    responseData: {
+      cart: user.cartItems,
+    },
+  });
+});
+
+export const getBulkProducts = asyncHandler(async (req, res, next) => {
+  const { ids } = req.body;
+  if (!ids || !Array.isArray(ids) || ids.length === 0) {
+    return next(new errorHandler("Invalid product IDs array", 400));
+  }
+
+  const products = await Product.find({ _id: { $in: ids } });
+
+  if (!products || products.length === 0) {
+    return next(new errorHandler("No products found", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    responseData: products,
+  });
+});
+
+export const mergeGuestCartToUser = asyncHandler(async (req, res, next) => {
+  const { guestCartItems } = req.body;
+  if (!Array.isArray(guestCartItems) || guestCartItems.length === 0) {
+    return next(new errorHandler("Guest cart items are required", 400));
+  }
+  const user = await User.findById(req.user.id);
+  if (!user) {
+    return next(new errorHandler("User not found", 400));
+  }
+  for (const item of guestCartItems) {
+    const { productId, quantity = 1 } = item;
+    if (!productId || quantity <= 0) continue;
+
+    const product = await Product.findById(productId);
+    if (!product) continue;
+
+    const existingItemIndex = user.cartItems.findIndex(
+      (cartItem) => cartItem.productId.toString() === productId
+    );
+
+    if (existingItemIndex !== -1) {
+      user.cartItems[existingItemIndex].quantity += quantity;
+    } else {
+      user.cartItems.push({ productId, quantity });
+    }
+  }
+  await user.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Guest cart merged successfully",
     responseData: {
       cart: user.cartItems,
     },

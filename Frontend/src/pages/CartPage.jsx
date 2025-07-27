@@ -8,6 +8,7 @@ import {
   verifyRazorpayPaymentThunk,
   createRazorpayOrderThunk,
   updateCartQuantityThunk,
+  getBulkProductsThunk,
 } from "../store/thunk/userThunk";
 import {
   ShoppingCart,
@@ -30,9 +31,14 @@ import { useNavigate } from "react-router-dom";
 const CartPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { cartItems, userAddresses, screenLoading, addedAddress } = useSelector(
-    (state) => state.userSlice
-  );
+  const {
+    cartItems,
+    userAddresses,
+    screenLoading,
+    addedAddress,
+    isAuthenticated,
+  } = useSelector((state) => state.userSlice);
+
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [newAddress, setNewAddress] = useState({
@@ -148,9 +154,13 @@ const CartPage = () => {
   };
 
   useEffect(() => {
-    dispatch(getUserCartThunk());
-    dispatch(getUserAddressThunk());
-  }, [addedAddress]);
+    if (isAuthenticated) {
+      dispatch(getUserCartThunk());
+      dispatch(getUserAddressThunk());
+    } else {
+      dispatch(getBulkProductsThunk());
+    }
+  }, [addedAddress, isAuthenticated]);
 
   return (
     <div className="min-h-screen bg-amber-50 p-4">
@@ -238,7 +248,13 @@ const CartPage = () => {
                       )}
 
                       <Button
-                        onClick={() => setShowAddressForm(true)}
+                        onClick={() => {
+                          if (isAuthenticated) {
+                            setShowAddressForm(true);
+                          } else {
+                            toast.error("Login first to add or edit Address");
+                          }
+                        }}
                         variant="outline"
                       >
                         <Edit className="h-4 w-4 mr-2" /> Add / Edit Address
@@ -257,6 +273,7 @@ const CartPage = () => {
                           setShowAddressForm(false);
                         } catch (error) {
                           console.error("Address Add Error:", error);
+                          toast.error("Login First");
                         }
                       }}
                       onCancel={() => setShowAddressForm(false)}
@@ -300,7 +317,11 @@ const CartPage = () => {
                             <div className="flex items-start gap-4">
                               <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
                                 <img
-                                  src={item.product.image}
+                                  src={
+                                    item.product.image
+                                      ? item.product.image
+                                      : item.product.images?.[0].url
+                                  }
                                   alt={item.product.name}
                                   className="w-full h-full object-cover"
                                 />
@@ -425,7 +446,13 @@ const CartPage = () => {
                   <Button
                     size="lg"
                     className="w-full bg-amber-700 hover:bg-amber-800"
-                    onClick={handleCheckout}
+                    onClick={() => {
+                      if (!isAuthenticated) {
+                        navigate("/auth");
+                      } else {
+                        handleCheckout();
+                      }
+                    }}
                     disabled={cartItems.length === 0}
                   >
                     <Lock className="h-4 w-4 mr-2" /> Proceed to Checkout

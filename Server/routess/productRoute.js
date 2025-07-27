@@ -3,8 +3,10 @@ import { authMiddleware } from "../middlewares/authMiddleware.js";
 import {
   addProduct,
   addToCart,
+  getBulkProducts,
   getProductDetails,
   getProducts,
+  mergeGuestCartToUser,
   updateProduct,
 } from "../controllers/productControllers.js";
 
@@ -31,5 +33,7 @@ router.put(
 );
 router.post("/cart/add", authMiddleware, addToCart);
 router.post("/review/:productId", authMiddleware, addReviewToProduct);
+router.post("/bulk", getBulkProducts);
+router.post("/marge-cart", authMiddleware, mergeGuestCartToUser);
 
 export default router;

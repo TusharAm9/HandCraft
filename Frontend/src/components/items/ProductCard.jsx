@@ -4,12 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { ShoppingCart, Heart, Star } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCartThunk } from "../../store/thunk/productThunk";
+import toast from "react-hot-toast";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const [wishlistItems, setWishlistItems] = useState([]);
+  const { isAuthenticated } = useSelector((state) => state.userSlice);
 
   const toggleWishlist = (productId) => {
     setWishlistItems((prev) =>
@@ -18,9 +20,28 @@ const ProductCard = ({ product }) => {
         : [...prev, productId]
     );
   };
+  const addToCartAsGuest = (productId, quantity = 1) => {
+    const localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
+    const existingItemIndex = localCart.findIndex(
+      (item) => item.productId === product._id
+    );
+
+    if (existingItemIndex !== -1) {
+      localCart[existingItemIndex].quantity += quantity;
+    } else {
+      localCart.push({ productId: product._id, quantity });
+    }
+
+    localStorage.setItem("guest_cart", JSON.stringify(localCart));
+  };
 
   const addToCart = (productId) => {
-    dispatch(addToCartThunk({ productId, quantity: 1 }));
+    if (isAuthenticated) {
+      dispatch(addToCartThunk({ productId, quantity: 1 }));
+    } else {
+      addToCartAsGuest(productId);
+      toast.success("Product added to cart ");
+    }
   };
 
   return (

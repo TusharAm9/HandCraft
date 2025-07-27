@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   addUserAddressThunk,
   createRazorpayOrderThunk,
+  getBulkProductsThunk,
   getUserAddressThunk,
   getUserCartThunk,
   getUserOrdersThunk,
@@ -84,6 +85,17 @@ export const userSlice = createSlice({
       state.cartItems = action.payload?.responseData;
     });
     builder.addCase(getUserCartThunk.rejected, (state, action) => {
+      state.screenLoading = false;
+    });
+
+    builder.addCase(getBulkProductsThunk.pending, (state, action) => {
+      state.screenLoading = true;
+    });
+    builder.addCase(getBulkProductsThunk.fulfilled, (state, action) => {
+      state.screenLoading = false;
+      state.cartItems = action.payload;
+    });
+    builder.addCase(getBulkProductsThunk.rejected, (state, action) => {
       state.screenLoading = false;
     });
 

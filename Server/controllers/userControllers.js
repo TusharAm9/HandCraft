@@ -55,7 +55,7 @@ export const login = asyncHandler(async (req, res, next) => {
   }
   const user = await User.findOne({
     $or: [{ phoneNumber }, { email }],
-  }).select("fullName email phoneNumber avatar role");
+  });
 
   if (!user) {
     return next(new errorHandler("Enter valid phoneNumber or password", 400));
@@ -70,6 +70,8 @@ export const login = asyncHandler(async (req, res, next) => {
   const token = jwt.sign(tokenData, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });
+  const userData = user.toObject();
+  delete userData.password;
 
   res
     .status(200)
@@ -81,7 +83,7 @@ export const login = asyncHandler(async (req, res, next) => {
     })
     .json({
       success: true,
-      responseData: { user },
+      responseData: { user: userData },
     });
 });
 

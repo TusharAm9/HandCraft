@@ -3,7 +3,11 @@ import { ShoppingCart, Menu, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useDispatch, useSelector } from "react-redux";
-import { getUserCartThunk, logoutUserThunk } from "../../store/thunk/userThunk";
+import {
+  getBulkProductsThunk,
+  getUserCartThunk,
+  logoutUserThunk,
+} from "../../store/thunk/userThunk";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useRef } from "react";
@@ -39,8 +43,12 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    dispatch(getUserCartThunk());
-  }, []);
+    if (isAuthenticated) {
+      dispatch(getUserCartThunk());
+    } else {
+      dispatch(getBulkProductsThunk());
+    }
+  }, [isAuthenticated]);
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -57,10 +65,10 @@ export default function Navbar() {
                 Home
               </Link>
               <Link to="#" className="text-gray-700 hover:text-amber-700">
-                Furniture
+                Kitchenware
               </Link>
               <Link to="#" className="text-gray-700 hover:text-amber-700">
-                Kitchenware
+                Storage
               </Link>
               <Link to="#" className="text-gray-700 hover:text-amber-700">
                 Decor
