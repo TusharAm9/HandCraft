@@ -4,19 +4,39 @@ import { errorHandler } from "../utility/errorHandler.js";
 import User from "../schema/userSchema.js";
 
 export const addProduct = asyncHandler(async (req, res, next) => {
-  const { name, description, price, category, stock } = req.body;
-  if (!name || !description || !price || !category || !stock) {
-    return next(new errorHandler("All fields are required", 400));
+  const {
+    name,
+    description,
+    longDescription,
+    originalPrice,
+    price,
+    category,
+    stock,
+  } = req.body;
+
+  if (
+    !name ||
+    !description ||
+    !price ||
+    !category ||
+    !stock ||
+    !originalPrice
+  ) {
+    return next(new errorHandler("All required fields must be provided", 400));
   }
+
   try {
-    const imageUrls = req.files.map((file) => ({
-      url: file?.path,
-      public_id: file?.filename,
-    }));
+    const imageUrls =
+      req.files?.map((file) => ({
+        url: file?.path,
+        public_id: file?.filename,
+      })) || [];
 
     const newProduct = await Product.create({
       name,
       description,
+      longDescription,
+      originalPrice: originalPrice ? Number(originalPrice) : undefined,
       price: Number(price),
       category,
       stock: Number(stock),

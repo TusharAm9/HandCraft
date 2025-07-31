@@ -6,7 +6,7 @@ import {
   getProductThunk,
 } from "../thunk/productThunk";
 const initialState = {
-  screenLoading: true,
+  screenLoading: false,
   products: [],
   cart: [],
   buttonLoading: false,
@@ -58,16 +58,20 @@ export const productSlice = createSlice({
     // add new product
     builder
       .addCase(addNewProductThunk.pending, (state) => {
-        state.loading = true;
+        state.screenLoading = true;
         state.error = null;
+        state.buttonLoading = true;
       })
       .addCase(addNewProductThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.products = [...state.products, action.payload];
+        state.buttonLoading = false;
+        state.screenLoading = false;
       })
       .addCase(addNewProductThunk.rejected, (state, action) => {
-        state.loading = false;
+        state.screenLoading = false;
         state.error = action.payload;
+        state.buttonLoading = false;
       });
   },
 });

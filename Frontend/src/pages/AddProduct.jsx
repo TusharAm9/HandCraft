@@ -1,7 +1,6 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Upload, X, Save } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -21,11 +20,15 @@ const categories = ["Furniture", "Kitchenware", "Decor", "Storage"];
 
 const AddProduct = () => {
   const dispatch = useDispatch();
+  // Getting loading states from redux store as per your original code
+  const { buttonLoading } = useSelector((state) => state.productSlice);
 
   const [formData, setFormData] = useState({
     name: "",
     description: "",
+    longDescription: "", // new field added
     category: "",
+    originalPrice: "", // new field added
     price: "",
     stock: "",
   });
@@ -56,7 +59,9 @@ const AddProduct = () => {
     const data = new FormData();
     data.append("name", formData.name);
     data.append("description", formData.description);
+    data.append("longDescription", formData.longDescription); // append new field
     data.append("category", formData.category);
+    data.append("originalPrice", formData.originalPrice); // append new field
     data.append("price", formData.price);
     data.append("stock", formData.stock);
     images.forEach((file) => data.append("images", file));
@@ -72,7 +77,9 @@ const AddProduct = () => {
       setFormData({
         name: "",
         description: "",
+        longDescription: "",
         category: "",
+        originalPrice: "",
         price: "",
         stock: "",
       });
@@ -124,6 +131,17 @@ const AddProduct = () => {
                   required
                 />
 
+                {/* New Long Description Input */}
+                <Label>Long Description</Label>
+                <Textarea
+                  rows={6}
+                  value={formData.longDescription}
+                  onChange={(e) =>
+                    handleInputChange("longDescription", e.target.value)
+                  }
+                  placeholder="Add detailed product info (optional)"
+                />
+
                 <Label>Category *</Label>
                 <Select
                   value={formData.category}
@@ -141,7 +159,18 @@ const AddProduct = () => {
                   </SelectContent>
                 </Select>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <Label>Original Price</Label>
+                    <Input
+                      type="number"
+                      value={formData.originalPrice}
+                      onChange={(e) =>
+                        handleInputChange("originalPrice", e.target.value)
+                      }
+                      placeholder="Optional"
+                    />
+                  </div>
                   <div>
                     <Label>Price *</Label>
                     <Input
@@ -187,9 +216,14 @@ const AddProduct = () => {
                     onChange={handleImageUpload}
                     className="hidden"
                     id="image-upload"
+                    disabled={buttonLoading}
                   />
                   <Label htmlFor="image-upload">
-                    <Button type="button" variant="outline">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={buttonLoading}
+                    >
                       Choose Files
                     </Button>
                   </Label>
@@ -207,6 +241,7 @@ const AddProduct = () => {
                         type="button"
                         onClick={() => removeImage(index)}
                         className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1"
+                        disabled={buttonLoading}
                       >
                         <X size={12} />
                       </button>
@@ -221,9 +256,38 @@ const AddProduct = () => {
                 <Button
                   type="submit"
                   className="w-full bg-amber-700 hover:bg-amber-800"
+                  disabled={buttonLoading}
                 >
-                  <Save className="mr-2 h-4 w-4" />
-                  Publish Product
+                  {buttonLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v8H4z"
+                        />
+                      </svg>
+                      Publishing...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="mr-2 h-4 w-4 inline-block" />
+                      Publish Product
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>

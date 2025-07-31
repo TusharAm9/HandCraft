@@ -93,6 +93,17 @@ export default function WoodenCraftsHomePage() {
             ))}
           </div>
         </div>
+        <Link
+          to="/all-products"
+          className="items-center justify-center mt-6 pt-4 flex"
+        >
+          <Button
+            variant="outline"
+            className="border-amber-700 text-amber-700 hover:bg-amber-50 bg-transparent"
+          >
+            View All Products
+          </Button>
+        </Link>
       </section>
 
       <section className="py-16 bg-amber-50">

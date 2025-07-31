@@ -10,6 +10,10 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please enter product description"],
   },
+  longDescription: {
+    type: String,
+    required: [true, "Please enter product description"],
+  },
   price: {
     type: Number,
     required: [true, "Please enter product price"],
@@ -34,6 +38,7 @@ const productSchema = new mongoose.Schema({
   reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
   rating: { type: Number, default: 0 },
   numOfReviews: { type: Number, default: 0 },
+  originalPrice: { required: true, type: Number },
   createdAt: {
     type: Date,
     default: Date.now,
