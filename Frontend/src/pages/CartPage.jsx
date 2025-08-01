@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import toast from "react-hot-toast";
 import AddressForm from "../components/items/AddressForm";
 import { useNavigate } from "react-router-dom";
+import { setGuestCartItems } from "@/store/slice/userSlice";
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -58,11 +59,34 @@ const CartPage = () => {
     }));
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantityAsGuest = (productId, quantity) => {
+    let localCart = JSON.parse(localStorage.getItem("guest_cart")) || [];
     if (quantity === 0) {
-      dispatch(removeItemThunk({ productId }));
+      localCart = localCart.filter((item) => item.productId !== productId);
     } else {
-      dispatch(updateCartQuantityThunk({ productId, quantity }));
+      const index = localCart.findIndex((item) => item.productId === productId);
+      if (index !== -1) {
+        localCart[index].quantity = quantity;
+      }
+    }
+    localStorage.setItem("guest_cart", JSON.stringify(localCart));
+  };
+
+  const updateQuantity = async (productId, quantity) => {
+    if (quantity === 0) {
+      if (isAuthenticated) {
+        dispatch(removeItemThunk({ productId }));
+      } else {
+        updateCartQuantityThunk(productId, quantity);
+        dispatch(getBulkProductsThunk());
+      }
+    } else {
+      if (isAuthenticated) {
+        dispatch(updateCartQuantityThunk({ productId, quantity }));
+      } else {
+        updateQuantityAsGuest(productId, quantity);
+        dispatch(getBulkProductsThunk());
+      }
     }
   };
 
@@ -160,7 +184,7 @@ const CartPage = () => {
     } else {
       dispatch(getBulkProductsThunk());
     }
-  }, [addedAddress, isAuthenticated]);
+  }, [addedAddress, isAuthenticated, dispatch]);
 
   return (
     <div className="min-h-screen bg-amber-50 p-4">

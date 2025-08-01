@@ -20,6 +20,7 @@ const initialState = {
   screenLoading: true,
   userProfile: null,
   cartItems: [],
+  guestCart: [],
   userAddresses: [],
   addedAddress: false,
   razorpayOrder: null,
@@ -36,7 +37,7 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setGuestCartItems: (state, action) => {
-      state.cartItems = action.payload;
+      state.guestCart = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -91,7 +92,7 @@ export const userSlice = createSlice({
     builder.addCase(getUserCartThunk.rejected, (state, action) => {
       state.screenLoading = false;
     });
-
+    // get bulk produucts
     builder.addCase(getBulkProductsThunk.pending, (state, action) => {
       state.screenLoading = true;
     });
