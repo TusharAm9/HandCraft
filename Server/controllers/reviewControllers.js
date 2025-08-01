@@ -4,8 +4,7 @@ import { asyncHandler } from "../utility/asyncHandler.js";
 import { errorHandler } from "../utility/errorHandler.js";
 
 export const addReviewToProduct = asyncHandler(async (req, res, next) => {
-  const { rating, comment } = req.body;
-  const { productId } = req.params;
+  const { rating, comment, productId } = req.body;
   const userId = req.user.id;
   if (!rating || !comment) {
     return next(new errorHandler("Rating and comment are required", 400));

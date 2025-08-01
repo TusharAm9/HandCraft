@@ -32,7 +32,7 @@ router.put(
   updateProduct
 );
 router.post("/cart/add", authMiddleware, addToCart);
-router.post("/review/:productId", authMiddleware, addReviewToProduct);
+router.post("/review/add", authMiddleware, addReviewToProduct);
 router.post("/bulk", getBulkProducts);
 router.post("/marge-cart", authMiddleware, mergeGuestCartToUser);
 

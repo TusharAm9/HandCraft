@@ -24,6 +24,8 @@ import { Link } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import toast from "react-hot-toast";
+import { getUserCartThunk } from "../store/thunk/userThunk";
+import { setGuestCartItems } from "../store/slice/userSlice";
 
 export default function ProductDetails() {
   const { productId } = useParams();
@@ -51,13 +53,14 @@ export default function ProductDetails() {
     } else {
       localCart.push({ productId: product._id, quantity });
     }
-
     localStorage.setItem("guest_cart", JSON.stringify(localCart));
+    dispatch(setGuestCartItems(localCart));
   };
 
-  const addToCart = (productId) => {
+  const addToCart = async (productId) => {
     if (isAuthenticated) {
-      dispatch(addToCartThunk({ productId, quantity }));
+      await dispatch(addToCartThunk({ productId, quantity: 1 })).unwrap();
+      dispatch(getUserCartThunk());
     } else {
       addToCartAsGuest(productId, quantity);
       toast.success("Product Added to cart");

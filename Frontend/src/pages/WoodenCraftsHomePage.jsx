@@ -14,8 +14,8 @@ export default function WoodenCraftsHomePage() {
   const relatedProducts = products?.slice(0, 8);
 
   useEffect(() => {
-    dispatch(getProductsThunk());
-  }, []);
+    dispatch(getProductsThunk({ page: 1, limit: 12 }));
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-white">

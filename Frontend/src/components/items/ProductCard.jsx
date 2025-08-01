@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCartThunk } from "../../store/thunk/productThunk";
 import toast from "react-hot-toast";
+import { setGuestCartItems } from "../../store/slice/userSlice";
+import { getUserCartThunk } from "../../store/thunk/userThunk";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
@@ -31,13 +33,14 @@ const ProductCard = ({ product }) => {
     } else {
       localCart.push({ productId: product._id, quantity });
     }
-
     localStorage.setItem("guest_cart", JSON.stringify(localCart));
+    dispatch(setGuestCartItems(localCart));
   };
 
-  const addToCart = (productId) => {
+  const addToCart = async (productId) => {
     if (isAuthenticated) {
-      dispatch(addToCartThunk({ productId, quantity: 1 }));
+      await dispatch(addToCartThunk({ productId, quantity: 1 })).unwrap();
+      dispatch(getUserCartThunk());
     } else {
       addToCartAsGuest(productId);
       toast.success("Product added to cart ");

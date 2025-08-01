@@ -105,7 +105,11 @@ export const getProducts = asyncHandler(async (req, res, next) => {
   const limit = parseInt(req.query.limit) || 10;
   const page = parseInt(req.query.page) || 1;
 
-  const products = await Product.find({}).sort({ createdAt: -1 });
+  const skip = (page - 1) * limit;
+  const products = await Product.find({})
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
   const totalCount = await Product.countDocuments();
 

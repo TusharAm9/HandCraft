@@ -34,7 +34,11 @@ const initialState = {
 export const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {},
+  reducers: {
+    setGuestCartItems: (state, action) => {
+      state.cartItems = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     // Login action
     builder.addCase(loginUserThunk.pending, (state, action) => {
@@ -221,6 +225,6 @@ export const userSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {} = userSlice.actions;
+export const { setGuestCartItems } = userSlice.actions;
 
 export default userSlice.reducer;

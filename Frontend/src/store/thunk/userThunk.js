@@ -83,6 +83,7 @@ export const getUserCartThunk = createAsyncThunk(
       const response = await axiosInstance.get("/user/cart");
       return response.data;
     } catch (error) {
+      console.log(error);
       const errorMessage =
         error?.response?.data?.message || "An error occurred";
       return rejectWithValue(errorMessage);
@@ -292,6 +293,23 @@ export const mergeGuestCartThunk = createAsyncThunk(
       const errorMsg =
         err.response?.data?.message || "Failed to merge guest cart";
       return rejectWithValue(errorMsg);
+    }
+  }
+);
+
+export const addReviewThunk = createAsyncThunk(
+  "/review/add",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.post(`/product/review/add`, data);
+      toast.success("Thank you! Your review has been submitted.");
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        "An error occurred while submitting your review.";
+      return rejectWithValue(errorMessage);
     }
   }
 );

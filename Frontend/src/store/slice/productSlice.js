@@ -12,23 +12,48 @@ const initialState = {
   buttonLoading: false,
   product: null,
   reviews: null,
+  error: null,
+  hasMore: true,
+  currentPage: 1,
 };
 
 export const productSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    resetProducts: (state) => {
+      state.products = [];
+      state.currentPage = 1;
+      state.hasMore = true;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     // get-products action
-    builder.addCase(getProductsThunk.pending, (state, action) => {
+    builder.addCase(getProductsThunk.pending, (state) => {
       state.screenLoading = true;
     });
     builder.addCase(getProductsThunk.fulfilled, (state, action) => {
       state.screenLoading = false;
-      state.products = action.payload?.responseData?.products || [];
+      const { products, page, limit, tootalProducts } = action.payload;
+      if (page === 1) {
+        state.products = products;
+      } else {
+        state.products = [...state.products, ...products];
+      }
+      state.currentPage = page;
+      if (
+        state.products?.length >= tootalProducts ||
+        products?.length < limit
+      ) {
+        state.hasMore = false;
+      } else {
+        state.hasMore = true;
+      }
     });
     builder.addCase(getProductsThunk.rejected, (state, action) => {
       state.screenLoading = false;
+      state.error = action.payload || "Something went wrong";
     });
 
     // get-product details action
@@ -77,6 +102,6 @@ export const productSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const {} = productSlice.actions;
+export const { resetProducts } = productSlice.actions;
 
 export default productSlice.reducer;

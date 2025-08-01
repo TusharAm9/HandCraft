@@ -4,10 +4,16 @@ import toast from "react-hot-toast";
 
 export const getProductsThunk = createAsyncThunk(
   "/product/all-products",
-  async (_, { rejectWithValue }) => {
+  async ({ page = 1, limit = 12 }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstance.get(`/product/all-products`, {});
-      return response.data;
+      const response = await axiosInstance.get(
+        `/product/all-products?page=${page}&limit=${limit}`,
+        {}
+      );
+      return {
+        ...response.data,
+        products: response.data.responseData.products,
+      };
     } catch (error) {
       console.log(error);
       const errorMessage =
